@@ -1,15 +1,18 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1 id="headline">IK1332 Air Quality Sensor</h1>
+  <PM25></PM25>
+  <PM10></PM10>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import PM25 from './components/PM25.vue'
+import PM10 from './components/PM10.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    PM25,
+    PM10
   }
 }
 </script>
@@ -23,4 +26,10 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+
+#headline{
+  font-family: Helvetica;
+  color: black;
+}
+
 </style>
