@@ -1,6 +1,6 @@
 <template>
   <h1 id="headline">IK1332 Project: IoT for Air Quality Monitoring</h1>
-  <p id="sub-heading2">Group 10: <u>Axel Lokrantz</u>, <u>Axel Lystam</u>, <u>Isak Wilkens</u>, <u>Björn Formgren</u></p>
+  <p id="sub-heading2">Group 10 at KTH: <u>Axel Lokrantz</u>, <u>Axel Lystam</u>, <u>Isak Wilkens</u>, <u>Björn Formgren</u></p>
   <div class="container">
     <PM25 @warning-change="updateWarning"></PM25>
     <PM10 @warning-change="updateWarning"></PM10>
@@ -35,7 +35,7 @@ export default {
   methods: {
     updateWarning({ type, timestamp }) { // Modify method to accept an object
       this.warning.type = type; // Set PM type
-      this.warning.message = `Air Quality Warning (${type}): ${timestamp}`; // Update message
+      this.warning.message = `Air Quality Warning (${type}): ${timestamp}⚠️`; // Update message
     }
   }
 }
