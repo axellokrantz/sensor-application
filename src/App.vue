@@ -7,6 +7,7 @@
   </div>
 
   <p id="warning">{{ warning.message }}</p>
+  <p id="warning">{{ warning2.message }}</p>
 
   <p id="sub-heading">This project incorporates an air quality sensor programmed in RIOT,
     embedded within a sensor network operating on RPL. Utilizing MQTT-SN with a broker
@@ -28,14 +29,25 @@ export default {
     return {
       warning: {
         type: null,
-        message: "Air Quality Warning: None"
+        message: "Air Quality Warning Sensor 1: None"
+      },
+      warning2: {
+        type: null,
+        message: "Air Quality Warning Sensor 2: None"
       }
     }
   },
   methods: {
-    updateWarning({ type, timestamp }) { // Modify method to accept an object
-      this.warning.type = type; // Set PM type
-      this.warning.message = `Air Quality Warning (${type}): ${timestamp}⚠️`; // Update message
+    updateWarning({ type, timestamp, sensor }) { // Modify method to accept an object
+      if(sensor == '1'){
+        this.warning.type = type; // Set PM type
+        this.warning.message = `Air Quality Warning Sensor 1: (${type}): ${timestamp} ⚠️`; // Update message
+      }
+      else{
+        this.warning2.type = type; 
+        this.warning2.message = `Air Quality Warning Sensor 2: (${type}) ${timestamp} ⚠️`; // Update message
+      }
+
     }
   }
 }

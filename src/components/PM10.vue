@@ -1,156 +1,171 @@
 <template>
-    <div class="PM10">
-      <canvas id="myChartPM10"></canvas>
-    </div>
-  </template>
-  
-  <script>
-  import { ref, onMounted, getCurrentInstance } from 'vue'; // Import getCurrentInstance
-  import { getDatabase, ref as dbRef, onValue } from 'firebase/database';
-  import { firebaseApp } from '@/main.js'; // Adjust the path based on your project structure
-  import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale } from 'chart.js';
-  
-  Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale); // Register the necessary Chart.js components
-  
-  export default {
-    setup() {
-      const firebaseDataPM10 = ref(null);
-      let myChartPM10 = null; // Variable to hold the chart instance for PM10
-      let chartDataPM10 = []; // Array to hold the chart data for PM10
-      let chartLabels = []; // Array to hold the chart labels
+  <div class="PM10">
+    <canvas id="myChartPM10"></canvas>
+  </div>
+</template>
 
-      const { emit } = getCurrentInstance();
-  
-      // Initialize Firebase Realtime Database using the exported app instance
-      const db = getDatabase(firebaseApp);
-  
-      // Get reference to the data in the database
-      const dataRefPM10 = dbRef(db, 'pm10');
-  
-      // Function to update the chart
-      const updateChart = (valuePM10) => {
-        const now = new Date();
-        const timeLabel = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-  
-        chartDataPM10.push(valuePM10);
-        chartLabels.push(timeLabel);
-  
-        // Limit the data arrays to the last 20 entries
-        if (chartDataPM10.length > 10) {
-          chartDataPM10.shift();
-          chartLabels.shift();
-        }
-    
-        myChartPM10.data.labels = chartLabels;
-        myChartPM10.data.datasets[0].data = chartDataPM10;
-        myChartPM10.update();
+<script>
+import { ref, onMounted, getCurrentInstance } from 'vue';
+import { getDatabase, ref as dbRef, onValue } from 'firebase/database';
+import { firebaseApp } from '@/main.js';
+import { Chart, LineController, LineElement, PointElement, LinearScale, Title, CategoryScale } from 'chart.js';
 
-        if (valuePM10 >= 150) {
-          const timestamp = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-          emit('warning-change', { type: 'PM 10', timestamp }); // Include PM type
-        }
+Chart.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale);
 
-      };
-  
-      // Listen for changes to the data in the database
-      onMounted(() => {
-        let intervalId = null;
-  
-        onValue(dataRefPM10, (snapshot) => {
-          firebaseDataPM10.value = snapshot.val();
-  
-          // Clear the previous interval
+export default {
+  setup() {
+    const firebaseDataPM10 = ref(null);
+    const firebaseDataPM10_2 = ref(null);
+    let myChartPM10 = null;
+    let chartDataPM10 = [];
+    let chartDataPM10_2 = [];
+    let chartLabels = [];
+
+    const { emit } = getCurrentInstance();
+    const db = getDatabase(firebaseApp);
+    const dataRefPM10 = dbRef(db, 'pm10_1');
+    const dataRefPM10_2 = dbRef(db, 'pm10_2');
+
+    const updateChart = (valuePM10, valuePM10_2) => {
+      const now = new Date();
+      const timeLabel = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+
+      chartDataPM10.push(valuePM10);
+      chartDataPM10_2.push(valuePM10_2);
+      chartLabels.push(timeLabel);
+
+      if (chartDataPM10.length > 9) {
+        chartDataPM10.shift();
+        chartDataPM10_2.shift();
+        chartLabels.shift();
+      }
+
+      myChartPM10.data.labels = chartLabels;
+      myChartPM10.data.datasets[0].data = chartDataPM10;
+      myChartPM10.data.datasets[1].data = chartDataPM10_2;
+      myChartPM10.update();
+
+      if (valuePM10 >= 150) {
+        const timestamp = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        emit('warning-change', { type: 'PM 10', timestamp, sensor: '1' });
+      }
+
+      if(valuePM10_2 >= 150){
+        const timestamp = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        emit('warning-change', { type: 'PM 10', timestamp, sensor: '2' });
+      }
+
+    };
+
+    onMounted(() => {
+      let intervalId = null;
+
+      onValue(dataRefPM10, (snapshot) => {
+        firebaseDataPM10.value = snapshot.val();
+
+        onValue(dataRefPM10_2, (snapshot) => {
+          firebaseDataPM10_2.value = snapshot.val();
+
           if (intervalId) {
             clearInterval(intervalId);
           }
-  
-          // Set a new interval
+
           intervalId = setInterval(() => {
-            updateChart(firebaseDataPM10.value);
-          }, 5000); // 5000 milliseconds = 5 seconds
+            updateChart(firebaseDataPM10.value, firebaseDataPM10_2.value);
+          }, 5000);
         });
-  
-        // Initialize the chart for PM10
-        const ctxPM10 = document.getElementById('myChartPM10');
-        myChartPM10 = new Chart(ctxPM10, {
-          type: 'line',
-          data: {
-            labels: chartLabels,
-            datasets: [{
-              label: 'Particle Matter 10',
-              data: chartDataPM10,
-              fill: false,
-              borderColor: 'rgb(0, 0, 0)',
-              borderWidth: 1, 
-              tension: 0.1
-            }]
+      });
+
+      const ctxPM10 = document.getElementById('myChartPM10');
+      myChartPM10 = new Chart(ctxPM10, {
+        type: 'line',
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: 'Particle Matter 10',
+            data: chartDataPM10,
+            fill: false,
+            borderColor: 'rgb(0, 0, 0)',
+            borderWidth: 1,
+            tension: 0.1
           },
-          options: {
-    scales: {
-      
-      x: {
-        grid: {
-        color: 'rgba(100, 100, 100, 100)', // Adjust the color of the grid lines
-        tickWidth: 0, // Adjust the width of the grid lines
+          {
+            label: 'Particle Matter 10_2',
+            data: chartDataPM10_2,
+            fill: false,
+            borderColor: 'rgb(255, 0, 0)',
+            borderWidth: 1,
+            tension: 0.1
+          }]
         },
-        ticks: {
-          display: true,
-          font: {
-            size: 10, // Adjust the font size here
-            family: 'Arial', // Adjust the font family here
-          },
-          color: 'blue' // Adjust the font color here
-        },
-        title: {
-          display: true,
-          text: 'Time',
-          font: {
-            size: 12, // Adjust the font size here
-            family: 'Arial', // Adjust the font family here
-          },
-          color: 'blue' // Adjust the font color here
+        options: {
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(100, 100, 100, 100)',
+                tickWidth: 0,
+              },
+              ticks: {
+                display: true,
+                font: {
+                  size: 10,
+                  family: 'Arial',
+                },
+                color: 'blue'
+              },
+              title: {
+                display: true,
+                text: 'Time',
+                font: {
+                  size: 12,
+                  family: 'Arial',
+                },
+                color: 'blue'
+              }
+            },
+            y: {
+              min: 0,
+              grid: {
+                color: 'rgba(100, 100, 100, 100)',
+                tickWidth: 1,
+              },
+              ticks: {
+                display: true,
+                font: {
+                  size: 10,
+                  family: 'Helvetica',
+                },
+                color: 'blue'
+              },
+              title: {
+                display: true,
+                text: 'Particle Matter 10 µg / m³',
+                font: {
+                  size: 12,
+                  family: 'Arial',
+                },
+                color: 'blue'
+              }
+            },
+          }
         }
-      },
-      y: {
-        grid: {
-        color: 'rgba(100, 100, 100, 100)', // Adjust the color of the grid lines
-        tickWidth: 1, // Adjust the width of the grid lines
-        },
-        ticks: {
-          display: true,
-          font: {
-            size: 10, // Adjust the font size here
-            family: 'Helvetica', // Adjust the font family here
-          },
-          color: 'blue' // Adjust the font color here
-        },
-        title: {
-          display: true,
-          text: 'Particle Matter 10 µg / m³',
-          font: {
-            size: 12, // Adjust the font size here
-            family: 'Arial', // Adjust the font family here
-          },
-          color: 'blue' // Adjust the font color here
-        }
-      },
-    }
+      });
+    });
+
+    return {
+      firebaseDataPM10,
+      firebaseDataPM10_2
+    };
   }
-});
-});
-  
-      return {
-        firebaseDataPM10
-      };
-    }
-  };
-  </script>
+};
+</script>
+
   
 <style>
   @media (max-width: 768px) {
     .PM10 {
-      width: 100%; /* Adjust the width to fill the container */
-      height: 140%; /* Adjust the height as needed */
+      width: 100%;
+      height: 140%; 
     }
   }
 
@@ -158,8 +173,8 @@
   @media (min-width: 769px) {
     .PM10 {
       margin: 25px;
-      width: 35%; /* Adjust the width for desktop */
-      height: 150%; /* Adjust the height for desktop */
+      width: 35%;
+      height: 150%;
     }
   }
 </style>
