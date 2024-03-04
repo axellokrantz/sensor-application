@@ -6,8 +6,12 @@
     <PM10 @warning-change="updateWarning"></PM10>
   </div>
 
-  <p id="warning">{{ warning.message }}</p>
-  <p id="warning">{{ warning2.message }}</p>
+  
+
+  <p class="warning">{{ warning.message }}</p>
+  <p class="warning warning2">{{ warning2.message }}</p>
+
+
 
   <p id="sub-heading">This project incorporates an air quality sensor programmed in RIOT,
     embedded within a sensor network operating on RPL. Utilizing MQTT-SN with a broker
@@ -41,11 +45,11 @@ export default {
     updateWarning({ type, timestamp, sensor }) { // Modify method to accept an object
       if(sensor == '1'){
         this.warning.type = type; // Set PM type
-        this.warning.message = `Air Quality Warning Sensor 1: (${type}): ${timestamp} ⚠️`; // Update message
+        this.warning.message = `Air Quality Warning Sensor 2: (${type}): ${timestamp} ⚠️`; // Update message
       }
       else{
         this.warning2.type = type; 
-        this.warning2.message = `Air Quality Warning Sensor 2: (${type}) ${timestamp} ⚠️`; // Update message
+        this.warning2.message = `Air Quality Warning Sensor 1: (${type}) ${timestamp} ⚠️`; // Update message
       }
 
     }
@@ -57,59 +61,64 @@ export default {
 
 .container {
   display: flex;
-  justify-content: center; /* Center the components horizontally */
-  align-items: center; /* Center the components vertically */
+  justify-content: center; 
+  align-items: center; 
 }
 
-#warning{
+.warning{
   font-family: Helvetica, Arial, sans-serif;
   font-size: 13px;
   font-weight: regular;
-  color: #ff0000; /* Dark gray color */
+  color: #000000;
   text-align: center;
-  max-width: 40%; /* Limiting maximum width */
-  margin-left: auto; /* Centering the sub-heading */
-  margin-right: auto; /* Centering the sub-heading */
+  max-width: 40%; 
+  margin-left: auto;
+  margin-right: auto; 
+}
+
+.warning2{
+  color: #ff0000
+  
 }
 
 #sub-heading2 {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 13px;
   font-weight: regular;
-  color: #000000; /* Dark gray color */
+  color: #000000;
   text-align: center;
-  margin-bottom: 40px; /* Space between headline and sub-heading */
-  max-width: 40%; /* Limiting maximum width */
-  margin-left: auto; /* Centering the sub-heading */
-  margin-right: auto; /* Centering the sub-heading */
+  margin-bottom: 40px; 
+  max-width: 40%; 
+  margin-left: auto;
+  margin-right: auto; 
 }
 
 #sub-heading {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 13px;
   font-weight: bold;
-  color: #0025f8; /* Dark gray color */
+  color: #0025f8;
   text-align: center;
-  margin-bottom: 40px; /* Space between headline and sub-heading */
-  max-width: 40%; /* Limiting maximum width */
-  margin-left: auto; /* Centering the sub-heading */
-  margin-right: auto; /* Centering the sub-heading */
+  margin-bottom: 40px;
+  max-width: 40%; 
+  margin-left: auto; 
+  margin-right: auto; 
   line-height: 1.4;
 }
 
 #headline {
   font-family: Helvetica;
   color: #0025f8;
-  margin-bottom: 21px; /* Corrected the syntax, remove the space between 20 and px */
+  margin-bottom: 21px;
   font-size: 22px;
-  text-align: center; /* Center the headline */
+  text-align: center;
   margin-bottom: -5px;
 }
 
 /* Media query for screens with width less than or equal to 768px (typical tablet and mobile screens) */
 @media (max-width: 768px) {
   .container {
-    flex-direction: column; /* Stack components vertically */
+    flex-direction: column;
   }
 
   #sub-heading {
@@ -125,7 +134,7 @@ export default {
 /* For desktop screens */
 @media (min-width: 769px) {
   .container {
-    flex-direction: row; /* Display components side by side */
+    flex-direction: row;
   }
 }
 
